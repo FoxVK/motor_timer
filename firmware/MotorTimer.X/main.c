@@ -29,6 +29,9 @@
 #define PIN_MOTOR_OUTPUT    5u
 #define PIN_START_BTN_INPUT 0u
 
+#define THRUST_RAMP_DOWN (0xffffu / 2000) ///< 100%->0% per 2000ms
+#define BTN_DELAY        (500)            ///< [ms] time to ingore button after press detection
+
 #define FOSC 8000uL  ///< sys freq [kHz]]
 
 
@@ -147,6 +150,7 @@ void adc_start_conv(char channel)
 {
     ADCON0bits.CHS = channel;
     NOP(); NOP();NOP(); NOP();NOP(); NOP();NOP(); NOP();NOP(); NOP(); //wait 10us
+    NOP(); NOP();NOP(); NOP();NOP(); NOP();NOP(); NOP();NOP(); NOP(); //wait 10us
     ADCON0bits.GO = 1u;
 }
 
@@ -159,14 +163,20 @@ char adc_get_result(void)
     return ADRESH;
 }
 
+/** Is btn pressed?
+ * 
+ */
 Bool get_btn(void)
 {
     return (LATA & (1 << PIN_START_BTN_INPUT)) != 0u;
 }
 
+unsigned big_thrust = 0; //thrust multiplied by 255
+
 void set_thrust(char value)
 {
     char pwm = value;
+    big_thrust = value;
 #if (PWM_USED == 1)
     PWM1DCH = 0u;
     PWM1DCL = pwm;
@@ -229,7 +239,8 @@ typedef enum {
     ST_READY_BTN_WAIT,
     ST_READY,
     ST_THRUST_BTN_WAIT,
-    ST_THRUST
+    ST_THRUST,
+    ST_THRUST_DOWN
 }State;
 
 State state = 0;
@@ -252,7 +263,7 @@ void st_ready_btn_wait(void)
     
     if(state_changed)
     {
-        timeout = 500;
+        timeout = BTN_DELAY;
     }
     
     if(timeout>0)
@@ -290,7 +301,7 @@ void st_thrust_btn_wait(void)
     static unsigned timeout = 0u;
     if(state_changed)
     {
-        timeout = 500;
+        timeout = BTN_DELAY;
     }
     
     if(timeout>0)
@@ -299,7 +310,7 @@ void st_thrust_btn_wait(void)
         if(thrust_timeout > 0)
             thrust_timeout--;
         else
-            go2ready();
+            state_set(ST_THRUST_DOWN);
     }
     else
         state_set(ST_THRUST);
@@ -314,6 +325,22 @@ void st_thrust(void)
     
     if(get_btn())
         go2ready();
+}
+
+void st_thrust_down(void)
+{
+    if(get_btn())  //emergency stop
+        go2ready();
+    
+    if(big_thrust > THRUST_RAMP_DOWN)
+    {
+        big_thrust -= THRUST_RAMP_DOWN;
+        set_thrust(big_thrust >> 8);
+    }
+    else
+    {
+        go2ready();
+    }
 }
 
 /*/states*/
@@ -344,6 +371,9 @@ void main(void)
                 break;
             case ST_THRUST_BTN_WAIT: 
                 st_thrust_btn_wait(); 
+                break;
+            case ST_THRUST_DOWN: 
+                st_thrust_down(); 
                 break;
         }
         state_changed = (old != state);
