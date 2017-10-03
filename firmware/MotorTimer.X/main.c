@@ -29,6 +29,9 @@
 #define PIN_MOTOR_OUTPUT    5u
 #define PIN_START_BTN_INPUT 0u
 
+#define AN_TIME_INPUT      2u
+#define AN_THROTLE_INPUT   3u
+
 #define THRUST_RAMP_DOWN (0xffffu / 2000) ///< 100%->0% per 2000ms
 #define BTN_DELAY        (500)            ///< [ms] time to ingore button after press detection
 
@@ -58,6 +61,7 @@ typedef enum {true=1, false=0}Bool;
 void sysclk_init(void)
 {
     OSCCONbits.IRCF = 0xEu; //8MHz 0xF=16MHz
+    OSCCONbits.SCS = 2;
     
     while(!OSCSTATbits.HFIOFL)
     {
@@ -112,24 +116,28 @@ void pwm_init()
 #elif (PIN_MOTOR_OUTPUT == 5)
     APFCON0bits.P1SEL = 1;
 #endif
-    
+
+    char divisor = 1u; ////clock division 8MHz /255 / 2^n 
     
 #if (PWM_USED == 1)
     PWM1PH = 0u;
     PWM1DC = 0u;
-    PWM1PR = 255u;
+    PWM1PR = 255u; //ticks per period
+    PWM1CLKCONbits.PS = divisor; //clock division 8MHz / 2^n
     PWM1CONbits.EN = 1;
     PWM1CONbits.OE = 1;
 #elif (PWM_USED == 2)
     PWM2PH = 0u;
     PWM2DC = 0u;
     PWM2PR = 255u;
+    PWM2CLKCONbits.PS = divisor; //clock division 8MHz / 2^n
     PWM2CONbits.EN = 1;
     PWM2CONbits.OE = 1;
 #elif (PWM_USED == 3)
     PWM3PH = 0u;
     PWM3DC = 0u;
     PWM3PR = 255u;
+    PWM3CLKCONbits.PS = divisor; //clock division 8MHz / 2^n
     PWM3CONbits.EN = 1;
     PWM3CONbits.OE = 1;
 #endif
@@ -176,10 +184,11 @@ unsigned big_thrust = 0; //thrust multiplied by 255
 void set_thrust(char value)
 {
     char pwm = value;
-    big_thrust = value;
+    big_thrust = value<<8;
 #if (PWM_USED == 1)
     PWM1DCH = 0u;
     PWM1DCL = pwm;
+    PWM1LDCONbits.PWM1LD = 1; //load
 #elif (PWM_USED == 2)
     PWM2DCH = 0u;
     PWM2DCL = pwm;
@@ -216,10 +225,10 @@ char iir_get(Iir_type * sum)
 
 void measure(void)
 {
-    adc_start_conv(PIN_THROTLE_INPUT);
+    adc_start_conv(AN_THROTLE_INPUT);
     char throtle = adc_get_result();
     
-    adc_start_conv(PIN_TIME_INPUT);
+    adc_start_conv(AN_TIME_INPUT);
     
     iir_feed(throtle, &mes_data.throtle_sum);
     
@@ -280,12 +289,14 @@ void st_ready_btn_wait(void)
 
 void st_ready(void)
 {
-    if(get_btn())
+    volatile Bool pressed = get_btn();
+    
+    if(pressed)
     {
         char thrust = iir_get(&mes_data.throtle_sum);
         Thrust_time time = iir_get(&mes_data.time_sum);
         
-        thrust_timeout = 15000UL + (((Thrust_time)time)<<9);
+        thrust_timeout = 5000UL + (((Thrust_time)time)<<8u);
         
         set_thrust(thrust);
         state_set(ST_THRUST_BTN_WAIT);
@@ -321,7 +332,7 @@ void st_thrust(void)
     if(thrust_timeout > 0)
         thrust_timeout--;
     else
-        go2ready();
+        state_set(ST_THRUST_DOWN);
     
     if(get_btn())
         go2ready();
@@ -353,6 +364,8 @@ void main(void)
     pwm_init();
     start_btn_init();
     tick_init();
+    
+    go2ready(); //initial transition
         
     
     while(1)

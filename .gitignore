@@ -50,3 +50,5 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+/firmware/MotorTimer.X/dist/Release/
+/firmware/MotorTimer.X/build/Release/
