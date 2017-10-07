@@ -36,7 +36,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Motor Timer"
-Date "2017-10-05"
+Date "2017-10-07"
 Rev "3"
 Comp "pavel.kovar@vsetin.org"
 Comment1 ""
@@ -105,28 +105,28 @@ U 1 1 59D50680
 P 4100 3300
 F 0 "D1" H 4100 3400 50  0000 C CNN
 F 1 "1N5819" H 4100 3200 50  0000 C CNN
-F 2 "Diodes_SMD:D_MiniMELF_Handsoldering" H 4100 3300 50  0001 C CNN
+F 2 "Diodes_SMD:D_SOD-123" H 4100 3300 50  0001 C CNN
 F 3 "" H 4100 3300 50  0001 C CNN
 	1    4100 3300
 	-1   0    0    1   
 $EndComp
 $Comp
-L POT RV1
+L POT Time
 U 1 1 59D50A95
 P 6950 3200
-F 0 "RV1" V 6775 3200 50  0000 C CNN
-F 1 "Time" V 6850 3200 50  0000 C CNN
+F 0 "Time" V 6775 3200 50  0000 C CNN
+F 1 "5k" V 6850 3200 50  0000 C CNN
 F 2 "Potentiometers:Potentiometer_Trimmer_Vishay_TS53YJ" H 6950 3200 50  0001 C CNN
 F 3 "" H 6950 3200 50  0001 C CNN
 	1    6950 3200
 	0    -1   -1   0   
 $EndComp
 $Comp
-L POT RV2
+L POT Throt
 U 1 1 59D50B3E
 P 7200 3550
-F 0 "RV2" V 7025 3550 50  0000 C CNN
-F 1 "Throt" V 7100 3550 50  0000 C CNN
+F 0 "Throt" V 7025 3550 50  0000 C CNN
+F 1 "5k" V 7100 3550 50  0000 C CNN
 F 2 "Potentiometers:Potentiometer_Trimmer_Vishay_TS53YJ" H 7200 3550 50  0001 C CNN
 F 3 "" H 7200 3550 50  0001 C CNN
 	1    7200 3550
