@@ -29,13 +29,14 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:microchip_pic12mcu
+LIBS:motor_timer-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "Motor Timer"
-Date "2017-10-05"
+Date "2017-10-07"
 Rev "3"
 Comp "pavel.kovar@vsetin.org"
 Comment1 ""
@@ -49,7 +50,7 @@ U 1 1 59D4FD24
 P 5450 3600
 F 0 "U1" H 5000 4150 50  0000 L CNN
 F 1 "PIC12F1571-I/P" H 5000 4050 50  0000 L CNN
-F 2 "Housings_DIP:DIP-8_W7.62mm_LongPads" H 5000 3150 50  0001 L CIN
+F 2 "Housings_SOIC:SOIC-8_3.9x4.9mm_Pitch1.27mm" H 5000 3150 50  0001 L CIN
 F 3 "" H 5450 3600 50  0001 C CNN
 	1    5450 3600
 	1    0    0    -1  
@@ -104,7 +105,7 @@ U 1 1 59D50680
 P 4100 3300
 F 0 "D1" H 4100 3400 50  0000 C CNN
 F 1 "1N5819" H 4100 3200 50  0000 C CNN
-F 2 "Diodes_SMD:D_MiniMELF_Handsoldering" H 4100 3300 50  0001 C CNN
+F 2 "Diodes_SMD:D_SOD-123" H 4100 3300 50  0001 C CNN
 F 3 "" H 4100 3300 50  0001 C CNN
 	1    4100 3300
 	-1   0    0    1   
@@ -115,7 +116,7 @@ U 1 1 59D50A95
 P 6950 3200
 F 0 "RV1" V 6775 3200 50  0000 C CNN
 F 1 "Time" V 6850 3200 50  0000 C CNN
-F 2 "Potentiometers:Potentiometer_Trimmer_ACP_CA9h2.5_Vertical_Px2.5mm_Py5.0mm" H 6950 3200 50  0001 C CNN
+F 2 "Potentiometers:Potentiometer_Trimmer_Vishay_TS53YJ" H 6950 3200 50  0001 C CNN
 F 3 "" H 6950 3200 50  0001 C CNN
 	1    6950 3200
 	0    -1   -1   0   
@@ -126,7 +127,7 @@ U 1 1 59D50B3E
 P 7200 3550
 F 0 "RV2" V 7025 3550 50  0000 C CNN
 F 1 "Throt" V 7100 3550 50  0000 C CNN
-F 2 "Potentiometers:Potentiometer_Trimmer_ACP_CA9h2.5_Vertical_Px2.5mm_Py5.0mm" H 7200 3550 50  0001 C CNN
+F 2 "Potentiometers:Potentiometer_Trimmer_Vishay_TS53YJ" H 7200 3550 50  0001 C CNN
 F 3 "" H 7200 3550 50  0001 C CNN
 	1    7200 3550
 	0    -1   -1   0   
@@ -167,7 +168,7 @@ $EndComp
 Wire Wire Line
 	3700 3750 3700 4250
 Wire Wire Line
-	4850 3900 3700 3900
+	3700 3900 4850 3900
 Connection ~ 3700 3900
 Wire Wire Line
 	4400 3750 4400 3900
@@ -176,8 +177,6 @@ Wire Wire Line
 	4750 3750 4750 3900
 Connection ~ 4750 3900
 Connection ~ 3700 4150
-Wire Wire Line
-	3700 2550 3700 3450
 Connection ~ 3700 3300
 Wire Wire Line
 	4750 2600 4750 3450
@@ -192,31 +191,22 @@ Wire Wire Line
 Wire Wire Line
 	6050 3500 6700 3500
 Wire Wire Line
-	3700 2550 8200 2550
-Wire Wire Line
 	6600 3000 6600 3050
 Wire Wire Line
 	6050 3800 6150 3800
 Wire Wire Line
 	6150 3800 6150 4250
-Wire Wire Line
-	6050 3300 6500 3300
-Wire Wire Line
-	6500 3300 6500 3000
 $Comp
 L R R1
 U 1 1 59D52444
-P 6100 2850
-F 0 "R1" V 6180 2850 50  0000 C CNN
-F 1 "560R" V 6100 2850 50  0000 C CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" V 6030 2850 50  0001 C CNN
-F 3 "" H 6100 2850 50  0001 C CNN
-	1    6100 2850
+P 6300 2800
+F 0 "R1" V 6380 2800 50  0000 C CNN
+F 1 "560R" V 6300 2800 50  0000 C CNN
+F 2 "Resistors_SMD:R_1206_HandSoldering" V 6230 2800 50  0001 C CNN
+F 3 "" H 6300 2800 50  0001 C CNN
+	1    6300 2800
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	6100 3000 6100 3300
-Connection ~ 6100 3300
 Wire Wire Line
 	8200 2550 8200 3000
 $Comp
@@ -254,9 +244,9 @@ Wire Wire Line
 	7050 3950 7050 3900
 Connection ~ 7050 3900
 Wire Wire Line
-	7500 4100 7450 4100
+	7450 4100 7500 4100
 Wire Wire Line
-	7450 4100 7450 3900
+	7450 3900 7450 4100
 Connection ~ 7450 3900
 Wire Wire Line
 	7500 4000 7450 4000
@@ -320,9 +310,6 @@ Wire Wire Line
 	6800 3200 6700 3200
 Wire Wire Line
 	6700 3200 6700 3500
-Wire Wire Line
-	6100 2700 6100 2600
-Connection ~ 6100 2600
 $Comp
 L CONN_01X01 P3
 U 1 1 59D67309
@@ -349,4 +336,86 @@ Wire Wire Line
 	8200 3000 8250 3000
 Wire Wire Line
 	8200 3500 8250 3500
+$Comp
+L +BATT #PWR04
+U 1 1 59D898C1
+P 3700 2550
+F 0 "#PWR04" H 3700 2400 50  0001 C CNN
+F 1 "+BATT" H 3700 2690 50  0000 C CNN
+F 2 "" H 3700 2550 60  0000 C CNN
+F 3 "" H 3700 2550 60  0000 C CNN
+	1    3700 2550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3700 2550 3700 3450
+$Comp
+L +BATT #PWR05
+U 1 1 59D89BD5
+P 8200 2550
+F 0 "#PWR05" H 8200 2400 50  0001 C CNN
+F 1 "+BATT" H 8200 2690 50  0000 C CNN
+F 2 "" H 8200 2550 60  0000 C CNN
+F 3 "" H 8200 2550 60  0000 C CNN
+	1    8200 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR06
+U 1 1 59D89CB4
+P 4750 2600
+F 0 "#PWR06" H 4750 2450 50  0001 C CNN
+F 1 "+3V3" H 4750 2740 50  0000 C CNN
+F 2 "" H 4750 2600 60  0000 C CNN
+F 3 "" H 4750 2600 60  0000 C CNN
+	1    4750 2600
+	1    0    0    -1  
+$EndComp
+Connection ~ 4750 2600
+Wire Wire Line
+	6050 3300 6500 3300
+Wire Wire Line
+	6500 3300 6500 3000
+Wire Wire Line
+	6300 2600 6300 2650
+Connection ~ 6300 2600
+Wire Wire Line
+	6300 2950 6300 3050
+Wire Wire Line
+	6300 3050 6500 3050
+Connection ~ 6500 3050
+$Comp
+L CONN_01X03 P5
+U 1 1 59D8A3DB
+P 5950 2800
+F 0 "P5" H 5950 3000 50  0000 C CNN
+F 1 "Prog" V 6050 2800 50  0000 C CNN
+F 2 "Connectors:GS3" H 5950 2800 60  0001 C CNN
+F 3 "" H 5950 2800 60  0000 C CNN
+	1    5950 2800
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5850 3000 5850 3150
+Wire Wire Line
+	5850 3150 6150 3150
+Wire Wire Line
+	6150 3150 6150 3600
+Wire Wire Line
+	6150 3600 6050 3600
+Wire Wire Line
+	5950 3000 5950 3100
+Wire Wire Line
+	5950 3100 6200 3100
+Wire Wire Line
+	6200 3100 6200 3400
+Wire Wire Line
+	6200 3400 6050 3400
+Wire Wire Line
+	6050 3000 6050 3050
+Wire Wire Line
+	6050 3050 6250 3050
+Wire Wire Line
+	6250 3050 6250 3300
+Connection ~ 6250 3300
 $EndSCHEMATC
