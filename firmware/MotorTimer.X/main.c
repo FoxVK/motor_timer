@@ -24,15 +24,15 @@
 #pragma config LVP = ON         // Low-Voltage Programming Enable (Low-voltage programming enabled)
 
 // AD channels are sligthly different - consult it with DS
-#define PIN_TIME_INPUT      2u
-#define PIN_THROTLE_INPUT   4u
+#define PIN_TIME_INPUT      4u
+#define PIN_THROTLE_INPUT   2u
 #define PIN_MOTOR_OUTPUT    5u
 #define PIN_START_BTN_INPUT 0u
 
-#define AN_TIME_INPUT      2u
-#define AN_THROTLE_INPUT   3u
+#define AN_TIME_INPUT      3u
+#define AN_THROTLE_INPUT   2u
 
-#define THRUST_RAMP_DOWN (0xffffu / 2000) ///< 100%->0% per 2000ms
+#define THRUST_RAMP_DOWN (0xffffu / 5000) ///< 100%->0% per 3000ms
 #define BTN_DELAY        (500)            ///< [ms] time to ingore button after press detection
 
 #define FOSC 8000uL  ///< sys freq [kHz]]
@@ -176,7 +176,7 @@ char adc_get_result(void)
  */
 Bool get_btn(void)
 {
-    return (LATA & (1 << PIN_START_BTN_INPUT)) != 0u;
+    return (PORTA & (1 << PIN_START_BTN_INPUT)) == 0u;
 }
 
 unsigned big_thrust = 0; //thrust multiplied by 255
@@ -293,10 +293,11 @@ void st_ready(void)
     
     if(pressed)
     {
+        //0% = 0x00, 100% = 0xff
         char thrust = iir_get(&mes_data.throtle_sum);
         Thrust_time time = iir_get(&mes_data.time_sum);
         
-        thrust_timeout = 5000UL + (((Thrust_time)time)<<8u);
+        thrust_timeout = 5000UL + (((Thrust_time)time)<<8u); //5-70s
         
         set_thrust(thrust);
         state_set(ST_THRUST_BTN_WAIT);
